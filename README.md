@@ -1,4 +1,4 @@
-# OUSD Transparency — built by Solana
+# OUSD Transparency
 
 An open-source transparency dashboard for **Open USD (OUSD)** — circulating
 supply, transfer volume, transaction counts, and active wallets across
