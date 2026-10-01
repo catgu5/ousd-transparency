@@ -50,7 +50,7 @@ shouldn't break the pipeline. If Dune changes the query entirely, update
 
 ## Deploying your own
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/solana-foundation/ousd-transparency&env=DUNE_API_KEY&envDescription=Free%20API%20key%20from%20Dune&envLink=https://dune.com/settings/api)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/catgu5/ousd-transparency&env=DUNE_API_KEY&envDescription=Free%20API%20key%20from%20Dune&envLink=https://dune.com/settings/api)
 
 Set `DUNE_API_KEY` in your deployment's environment variables.
 
