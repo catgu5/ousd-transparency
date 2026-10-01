@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OUSD Transparency — built by Solana
 
-## Getting Started
+An open-source transparency dashboard for **Open USD (OUSD)** — circulating
+supply, transfer volume, transaction counts, and active wallets across
+**Solana, Ethereum, Base, and Tempo**.
 
-First, run the development server:
+Inspired by [ousd.fyi](https://ousd.fyi), the official OUSD transparency
+site. This project is an independent, community-run alternative built and
+maintained by Solana, sourcing its data from the public Dune dashboard
+[zcabrams/open-usd-ousd](https://dune.com/zcabrams/open-usd-ousd) rather than
+a private backend, so anyone can audit, fork, or self-host it.
+
+**This is informational only — not an independent reserve attestation.**
+
+## Stack
+
+- [Next.js](https://nextjs.org) (App Router) + TypeScript + Tailwind CSS
+- [Recharts](https://recharts.org) for the stacked time-series charts
+- [Dune API](https://docs.dune.com/api-reference) as the sole data source —
+  one query (`8863473`) backs every chart on the dashboard
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local
+# add your DUNE_API_KEY to .env.local (free tier: https://dune.com/settings/api)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Without a `DUNE_API_KEY`, the app still runs — it falls back to a static
+snapshot (clearly labeled in the UI) instead of live history, so the project
+is usable and forkable without any credentials.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How the data flows
 
-## Learn More
+`src/lib/dune.ts` fetches `https://api.dune.com/api/v1/query/8863473/results`,
+normalizes the rows by date/chain, and derives the summary stats (AUM,
+30-day volume, 30-day tx count, 30-day active wallets). Results are revalidated
+hourly (`export const revalidate = 3600`).
 
-To learn more about Next.js, take a look at the following resources:
+The row/column names here are inferred from the public dashboard, since the
+raw schema isn't published — `pickNumber` / `pickChain` / `pickDate` in
+`src/lib/dune.ts` match on substrings (`aum`, `volume`, `tx`, `wallet`, `chain`,
+`day`/`date`) rather than exact column names, so small schema drift upstream
+shouldn't break the pipeline. If Dune changes the query entirely, update
+`DUNE_QUERY_ID` and the matching logic in that file.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploying your own
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/solana-foundation/ousd-transparency&env=DUNE_API_KEY&envDescription=Free%20API%20key%20from%20Dune&envLink=https://dune.com/settings/api)
 
-## Deploy on Vercel
+Set `DUNE_API_KEY` in your deployment's environment variables.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Issues and PRs welcome. This is a small, intentionally simple codebase — one
+data file (`src/lib/dune.ts`), one chart component, one page.
+
+## License
+
+[MIT](./LICENSE)
